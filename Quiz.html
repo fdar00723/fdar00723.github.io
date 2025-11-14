@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Kingdom NEET Quiz</title>
+    <!-- Load Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#10b981', // Emerald green
+                        'secondary': '#fef3c7', // Light yellow
+                        'dark': '#1f2937', // Dark gray
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles for better aesthetics */
+        body {
+            background-color: #f3f4f6; /* Light gray background */
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 1rem;
+        }
+        .container-quiz {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .option-item {
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid #e5e7eb;
+        }
+        .option-item:hover {
+            border-color: #d1d5db;
+            background-color: #f9fafb;
+        }
+        .option-item.selected {
+            border-color: #10b981;
+            background-color: #ecfdf5;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.5);
+            font-weight: 600;
+        }
+        .palette-btn {
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        /* Status styles for palette */
+        .status-default { background-color: #f3f4f6; color: #4b5563; }
+        .status-attempted { background-color: #fcd34d; color: #92400e; } /* Amber */
+        .status-correct { background-color: #10b981; color: white; } /* Emerald */
+        .status-incorrect { background-color: #ef4444; color: white; } /* Red */
+        .status-current { background-color: #3b82f6; color: white; } /* Blue */
+        .status-unattempted { background-color: #d1d5db; color: #1f2937; } /* Gray */
+
+        /* Scorecard specific */
+        .score-box {
+            border-bottom: 4px solid #10b981;
+            transition: all 0.3s;
+        }
+        .score-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        /* Explanation styles */
+        .explanation-correct {
+            border-left: 5px solid #10b981;
+            background-color: #ecfdf5;
+        }
+        .explanation-incorrect {
+            border-left: 5px solid #f87171;
+            background-color: #fef2f2;
+        }
+        /* Custom scrollbar for palette */
+        #question-palette {
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        #question-palette::-webkit-scrollbar {
+            height: 8px;
+        }
+        #question-palette::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="container-quiz rounded-xl overflow-hidden">
+        <!-- Header -->
+        <header class="bg-primary p-4 text-white text-center rounded-t-xl">
+            <h1 class="text-2xl font-bold">NEET Plant Kingdom Quick Quiz (2 Questions)</h1>
+            <p class="text-sm opacity-90">Test your knowledge on Bryophytes and Angiosperms.</p>
+        </header>
+
+        <!-- Quiz Content Area -->
+        <main id="quiz-container" class="p-6 md:p-8">
+            <!-- Question rendering area -->
+            <div id="question-area" class="min-h-[400px]">
+                <!-- Question and options will be rendered here -->
+            </div>
+
+            <!-- Navigation and Submit Buttons -->
+            <div id="navigation-area" class="flex justify-between items-center pt-6 border-t border-gray-100 mt-4">
+                <button id="prev-btn" onclick="prevQuestion()" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow-md">
+                    &larr; Previous
+                </button>
+                <button id="next-btn" onclick="nextQuestion()" class="bg-primary hover:bg-emerald-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 shadow-lg">
+                    Next &rarr;
+                </button>
+                <button id="submit-btn" onclick="submitQuiz()" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-8 rounded-lg transition duration-200 shadow-lg hidden">
+                    Submit Quiz
+                </button>
+            </div>
+        </main>
+
+        <!-- Question Palette -->
+        <div class="bg-gray-50 p-4 border-t">
+            <h3 class="text-lg font-semibold text-dark mb-3">Question Palette</h3>
+            <div id="question-palette" class="flex gap-3 pb-2">
+                <!-- Palette buttons will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Scorecard Area (Initially Hidden) -->
+        <div id="scorecard-area" class="p-6 md:p-8 bg-secondary hidden">
+            <!-- Scorecard and explanations will be rendered here -->
+        </div>
+
+    </div>
+
+    <script>
+        // --- QUIZ DATA ---
+        const QUIZ_DATA = [
+            {
+                id: 1,
+                question: "The dominant phase in the life cycle of a Bryophyte (like Funaria) is:",
+                options: ["Gametophyte", "Sporophyte", "Protonema", "Antheridium"],
+                correctAnswerIndex: 0, // A
+                explanation: "Bryophytes (mosses and liverworts) exhibit Haplodiplontic life cycle, but the dominant, independent, and photosynthetic phase is the **Gametophyte** generation. The sporophyte is short-lived and totally dependent on the gametophyte.",
+                topic: "Bryophytes"
+            },
+            {
+                id: 2,
+                question: "Which of the following processes is a characteristic feature unique to Angiosperms?",
+                options: ["Syngamy", "Meiosis", "Double Fertilization", "Zygotic Meiosis"],
+                correctAnswerIndex: 2, // C
+                explanation: "**Double fertilization** is the most distinguishing feature of Angiosperms (flowering plants). It involves one male gamete fusing with the egg cell (syngamy) and the other male gamete fusing with the two polar nuclei to form the triploid Endosperm.",
+                topic: "Angiosperms"
+            }
+        ];
+
+        // --- QUIZ STATE ---
+        let currentQuestionIndex = 0;
+        let userAnswers = Array(QUIZ_DATA.length).fill(null); // Stores index of selected option (0 to 3), or null if unattempted.
+        let isQuizSubmitted = false;
+
+        // --- CORE UI FUNCTIONS ---
+
+        /**
+         * Renders the current question, options, and updates the palette/navigation.
+         */
+        function renderQuestion() {
+            const index = currentQuestionIndex;
+            const questionData = QUIZ_DATA[index];
+            const qArea = document.getElementById('question-area');
+            const totalQuestions = QUIZ_DATA.length;
+
+            let optionsHtml = questionData.options.map((option, optionIndex) => {
+                const isSelected = userAnswers[index] === optionIndex;
+                const selectedClass = isSelected ? 'selected' : '';
+                
+                return `
+                    <div
+                        class="option-item p-4 rounded-lg bg-white mb-2 shadow-sm ${selectedClass}"
+                        data-option-index="${optionIndex}"
+                        onclick="recordAnswer(${optionIndex})"
+                    >
+                        <span class="font-bold text-primary mr-2">${String.fromCharCode(65 + optionIndex)}.</span>
+                        ${option}
+                    </div>
+                `;
+            }).join('');
+
+            qArea.innerHTML = `
+                <div class="mb-4">
+                    <p class="text-sm text-gray-500 font-medium uppercase">Question ${index + 1} of ${totalQuestions} (${questionData.topic})</p>
+                    <h2 class="text-xl md:text-2xl font-bold text-dark mt-1">
+                        ${questionData.question}
+                    </h2>
+                </div>
+                <div id="options-list" class="space-y-3">
+                    ${optionsHtml}
+                </div>
+            `;
+
+            updateNavigationButtons();
+            renderQuestionPalette();
+        }
+
+        /**
+         * Updates the visibility and state of the Next, Previous, and Submit buttons.
+         */
+        function updateNavigationButtons() {
+            const total = QUIZ_DATA.length;
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (isQuizSubmitted) {
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.add('hidden');
+                return;
+            } else {
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+
+            // Previous button logic
+            if (currentQuestionIndex === 0) {
+                prevBtn.setAttribute('disabled', 'true');
+                prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                prevBtn.removeAttribute('disabled');
+                prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            // Next/Submit button logic
+            if (currentQuestionIndex === total - 1) {
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Renders the Question Palette at the bottom.
+         */
+        function renderQuestionPalette() {
+            const palette = document.getElementById('question-palette');
+            let paletteHtml = QUIZ_DATA.map((q, index) => {
+                let statusClass = 'status-default';
+                
+                if (isQuizSubmitted) {
+                    const isCorrect = userAnswers[index] === q.correctAnswerIndex;
+                    if (userAnswers[index] !== null) {
+                        statusClass = isCorrect ? 'status-correct' : 'status-incorrect';
+                    } else {
+                        statusClass = 'status-unattempted';
+                    }
+                } else {
+                    if (index === currentQuestionIndex) {
+                        statusClass = 'status-current';
+                    } else if (userAnswers[index] !== null) {
+                        statusClass = 'status-attempted';
+                    } else {
+                        statusClass = 'status-unattempted';
+                    }
+                }
+
+                return `
+                    <button
+                        class="palette-btn w-10 h-10 flex items-center justify-center rounded-full font-bold text-sm flex-shrink-0 ${statusClass}"
+                        onclick="goToQuestion(${index})"
+                    >
+                        ${index + 1}
+                    </button>
+                `;
+            }).join('');
+            palette.innerHTML = paletteHtml;
+        }
+
+        // --- USER INTERACTION FUNCTIONS ---
+
+        /**
+         * Records the user's answer for the current question.
+         * @param {number} optionIndex - The index of the selected option (0-3).
+         */
+        function recordAnswer(optionIndex) {
+            if (isQuizSubmitted) return;
+
+            // Check if the same answer is being deselected
+            if (userAnswers[currentQuestionIndex] === optionIndex) {
+                userAnswers[currentQuestionIndex] = null; // Deselect
+            } else {
+                userAnswers[currentQuestionIndex] = optionIndex; // Select
+            }
+            
+            // Re-render to update selection style and palette status
+            renderQuestion();
+        }
+
+        /**
+         * Navigates to the previous question.
+         */
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        /**
+         * Navigates to the next question.
+         */
+        function nextQuestion() {
+            if (currentQuestionIndex < QUIZ_DATA.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            }
+        }
+
+        /**
+         * Jumps to a specific question index.
+         * @param {number} index - The index of the question to go to.
+         */
+        function goToQuestion(index) {
+            if (index >= 0 && index < QUIZ_DATA.length) {
+                currentQuestionIndex = index;
+                renderQuestion();
+            }
+        }
+
+        // --- SUBMISSION AND SCORECARD ---
+
+        /**
+         * Calculates results and displays the scorecard.
+         */
+        function submitQuiz() {
+            isQuizSubmitted = true;
+            
+            const totalQuestions = QUIZ_DATA.length;
+            let attempted = 0;
+            let correct = 0;
+            let incorrect = 0;
+
+            for (let i = 0; i < totalQuestions; i++) {
+                const userAnswer = userAnswers[i];
+                if (userAnswer !== null) {
+                    attempted++;
+                    if (userAnswer === QUIZ_DATA[i].correctAnswerIndex) {
+                        correct++;
+                    } else {
+                        incorrect++;
+                    }
+                }
+            }
+
+            const unattempted = totalQuestions - attempted;
+            const percentage = (correct / totalQuestions) * 100;
+
+            // Hide quiz area
+            document.getElementById('quiz-container').classList.remove('rounded-xl');
+            document.getElementById('question-area').classList.add('hidden');
+            document.getElementById('navigation-area').classList.add('hidden');
+            
+            // Show scorecard area
+            const scorecardArea = document.getElementById('scorecard-area');
+            scorecardArea.classList.remove('hidden');
+
+            let scorecardHtml = `
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-primary">Quiz Complete!</h2>
+                    <p class="text-lg text-gray-700 mt-2">Your performance summary is below.</p>
+                </div>
+
+                <!-- Score Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+                    <!-- Total Questions -->
+                    <div class="score-box bg-white p-4 rounded-lg text-center shadow">
+                        <p class="text-2xl font-bold text-dark">${totalQuestions}</p>
+                        <p class="text-sm text-gray-500">Total Q's</p>
+                    </div>
+                    <!-- Attempted -->
+                    <div class="score-box bg-white p-4 rounded-lg text-center shadow">
+                        <p class="text-2xl font-bold text-yellow-600">${attempted}</p>
+                        <p class="text-sm text-gray-500">Attempted</p>
+                    </div>
+                    <!-- Correct -->
+                    <div class="score-box bg-white p-4 rounded-lg text-center shadow">
+                        <p class="text-2xl font-bold text-green-600">${correct}</p>
+                        <p class="text-sm text-gray-500">Correct</p>
+                    </div>
+                    <!-- Incorrect -->
+                    <div class="score-box bg-white p-4 rounded-lg text-center shadow">
+                        <p class="text-2xl font-bold text-red-600">${incorrect}</p>
+                        <p class="text-sm text-gray-500">Incorrect</p>
+                    </div>
+                </div>
+
+                <div class="text-center mb-8">
+                    <p class="text-4xl font-extrabold ${correct > 1 ? 'text-primary' : 'text-red-500'}">${percentage.toFixed(0)}% Score</p>
+                </div>
+
+                <!-- Explanations -->
+                <h3 class="text-2xl font-bold text-dark mb-4 border-b pb-2">Detailed Solutions & Explanations</h3>
+                ${generateExplanations()}
+            `;
+            scorecardArea.innerHTML = scorecardHtml;
+            
+            // Update palette one last time
+            renderQuestionPalette();
+        }
+
+        /**
+         * Generates the detailed explanations section.
+         */
+        function generateExplanations() {
+            return QUIZ_DATA.map((q, index) => {
+                const userAnswerIndex = userAnswers[index];
+                const isCorrect = userAnswerIndex === q.correctAnswerIndex;
+                const statusClass = isCorrect ? 'explanation-correct' : 'explanation-incorrect';
+                const statusText = isCorrect ? 'Your Answer was CORRECT' : (userAnswerIndex === null ? 'UNATTEMPTED' : 'Your Answer was INCORRECT');
+
+                const userAnswerText = userAnswerIndex !== null ? q.options[userAnswerIndex] : 'Not Attempted';
+                const correctAnswerText = q.options[q.correctAnswerIndex];
+
+                return `
+                    <div class="mb-6 p-4 rounded-lg shadow-md ${statusClass}">
+                        <h4 class="text-lg font-bold text-dark mb-2">Q${index + 1}: ${q.question}</h4>
+                        <div class="flex flex-col md:flex-row md:space-x-4 text-sm mb-3">
+                            <p class="font-semibold ${isCorrect ? 'text-green-700' : 'text-red-700'}">${statusText}</p>
+                            <p class="text-gray-600">| Attempted: 
+                                <span class="font-bold">${userAnswerText}</span>
+                            </p>
+                            <p class="text-gray-600">| Correct Answer: 
+                                <span class="font-bold text-green-700">${correctAnswerText}</span>
+                            </p>
+                        </div>
+                        <p class="mt-2 text-gray-700 font-medium">Explanation:</p>
+                        <p class="text-sm text-gray-600">${q.explanation}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialize the quiz when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuestion();
+        });
+    </script>
+
+</body>
+</html>
