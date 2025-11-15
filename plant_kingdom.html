@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NCERTify • NEET 2026 — Plant Kingdom Quiz</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<style>
+  body{background:linear-gradient(180deg,#f0fdfa,#ffffff);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+  .card{background:white;border-radius:14px;box-shadow:0 8px 30px rgba(2,6,23,0.06)}
+  .option-item{cursor:pointer;border:1.5px solid #e6eef0;padding:12px;border-radius:8px;transition:all .12s;background:white}
+  .option-item:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+  .option-item.selected{border-color:#10b981;background:#ecfdf5}
+  .palette-btn{width:44px;height:44px;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+  .small-muted{font-size:.9rem;color:#6b7280}
+  select.match-select{width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;background:white}
+  .stat-box{border-radius:8px;background:#fff;padding:18px;box-shadow:0 6px 18px rgba(2,6,23,0.04)}
+  .explain-card{background:#ffffff;border-radius:10px;padding:14px;box-shadow:0 8px 20px rgba(2,6,23,0.04);margin-bottom:12px}
+  .badge-correct{background:#bbf7d0;color:#065f46;padding:6px 8px;border-radius:999px;font-weight:700}
+  .badge-incorrect{background:#fecaca;color:#7f1d1d;padding:6px 8px;border-radius:999px;font-weight:700}
+  .badge-unattempt{background:#e6e7eb;color:#374151;padding:6px 8px;border-radius:999px;font-weight:700}
+  a.link-inline{color:#047857;text-decoration:underline}
+</style>
+</head>
+<body class="min-h-screen flex items-start justify-center p-6">
+
+<div class="w-full max-w-5xl">
+
+  <!-- Landing -->
+  <section id="landing" class="card p-8 text-center">
+    <div class="flex items-center justify-center gap-3 mb-4">
+      <div class="w-12 h-12 rounded-lg bg-green-600 text-white flex items-center justify-center font-bold text-lg">N</div>
+      <div class="text-left">
+        <h1 class="text-2xl font-extrabold">NCERTify</h1>
+        <div class="text-sm text-gray-600">Botany • Plant Kingdom</div>
+      </div>
+    </div>
+
+    <h2 class="text-4xl font-extrabold text-green-800 leading-tight">Master Plant Kingdom<br/>for NEET 2026</h2>
+    <p class="text-gray-600 max-w-2xl mx-auto mt-4">Attempt a full-length NEET-oriented mock: MCQs, Assertion–Reason, Statement-type, and Match-the-Column — Mixed like real NEET. Instant score and retest option.</p>
+
+    <!-- Developer & social -->
+    <div class="mt-4 text-sm">
+      <div class="font-bold">Developer name : Faisal Fayaz</div>
+      <div class="mt-1"><a class="link-inline" href="https://www.instagram.com/neetmbbsdoctors?igsh=MWNtNDFuMWR5NTFmNg==" target="_blank">Instagram</a> • <a class="link-inline" href="https://youtube.com/@neetmbbsdoctors?si=1nVAe6kYSGic9pha" target="_blank">YouTube</a></div>
+    </div>
+
+    <!-- Language chooser -->
+    <div class="mt-6 flex flex-col sm:flex-row items-center gap-3 justify-center">
+      <div class="text-sm font-semibold">Choose language</div>
+      <button onclick="chooseLanguage('en')" id="btn-en" class="px-6 py-2 rounded-lg bg-green-600 text-white shadow">English</button>
+      <button onclick="chooseLanguage('hi')" id="btn-hi" class="px-6 py-2 rounded-lg bg-gray-800 text-white shadow">हिन्दी</button>
+    </div>
+
+    <div class="mt-6">
+      <button onclick="startQuiz()" class="px-8 py-3 rounded-xl bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold shadow-lg">Start Quiz Now →</button>
+    </div>
+
+    <div class="mt-8 flex items-center justify-center gap-12 text-center">
+      <div>
+        <div class="text-2xl font-bold text-green-700">45</div>
+        <div class="text-sm text-gray-600">Questions</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-green-700">45</div>
+        <div class="text-sm text-gray-600">Minutes</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-green-700">Free</div>
+        <div class="text-sm text-gray-600">100%</div>
+      </div>
+    </div>
+
+    <p class="text-xs text-gray-500 mt-6">Powered by @NeetMbbsDoctors</p>
+  </section>
+
+  <!-- Quiz App -->
+  <section id="app" class="card mt-6 p-6 hidden">
+    <header class="flex items-center justify-between mb-4">
+      <div>
+        <div class="text-sm text-gray-600">NCERTify • Plant Kingdom</div>
+        <h3 id="heading" class="text-xl font-bold">NEET 2026 — Mock Quiz</h3>
+      </div>
+      <div class="text-right">
+        <div class="text-xs text-gray-500">Time Left</div>
+        <div id="timer" class="text-lg font-mono font-bold text-red-600">45:00</div>
+      </div>
+    </header>
+
+    <main>
+      <div id="question-area" class="min-h-[260px]"></div>
+
+      <div class="flex items-center justify-between mt-6">
+        <div class="flex gap-2">
+          <button id="prev" onclick="prevQuestion()" class="px-4 py-2 bg-gray-100 rounded">← Previous</button>
+          <button id="next" onclick="nextQuestion()" class="px-4 py-2 bg-green-600 text-white rounded">Next →</button>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="mark" onclick="toggleMark()" class="px-3 py-2 bg-yellow-200 rounded">Mark</button>
+          <button id="submitBtn" onclick="submitQuiz()" class="px-4 py-2 bg-red-600 text-white rounded">Submit</button>
+        </div>
+      </div>
+
+      <div class="mt-6 border-t pt-4">
+        <h4 class="text-sm font-semibold text-gray-600 mb-2">Question Palette</h4>
+        <div id="palette" class="flex gap-2 flex-wrap"></div>
+      </div>
+    </main>
+  </section>
+
+  <!-- Scorecard -->
+  <section id="scorecard" class="card mt-6 p-8 text-left hidden">
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-extrabold">Quiz Complete</h2>
+      <p id="score-language" class="text-sm text-gray-600">Your results (Language: English)</p>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="stat-box text-center">
+        <div class="text-xl font-bold" id="stat-total">45</div>
+        <div class="text-sm text-gray-500">Total Q's</div>
+      </div>
+      <div class="stat-box text-center">
+        <div class="text-xl font-bold text-yellow-600" id="stat-attempted">0</div>
+        <div class="text-sm text-gray-500">Attempted</div>
+      </div>
+      <div class="stat-box text-center">
+        <div class="text-xl font-bold text-green-600" id="stat-correct">0</div>
+        <div class="text-sm text-gray-500">Correct</div>
+      </div>
+      <div class="stat-box text-center">
+        <div class="text-xl font-bold text-red-600" id="stat-incorrect">0</div>
+        <div class="text-sm text-gray-500">Incorrect</div>
+      </div>
+    </div>
+
+    <div class="text-center mb-6">
+      <div id="points" class="text-4xl font-extrabold text-green-700">0 Points</div>
+      <div id="percentage" class="text-sm text-gray-500">Percentage: 0%</div>
+    </div>
+
+    <h3 class="text-lg font-bold mb-3">Solutions & Explanations</h3>
+    <div id="solutions-list"></div>
+
+    <div class="text-center mt-6">
+      <button onclick="retest()" class="px-6 py-3 bg-green-600 text-white rounded-xl">Retest</button>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ----------------- SETTINGS & STATE ----------------- */
+const TOTAL_TIME = 45 * 60; // seconds
+const POS = 4, NEG = -1; // scoring per question
+let lang = 'en';
+let timeLeft = TOTAL_TIME, timerId = null;
+let current = 0, marked = new Set(), submitted = false;
+let answers = Array(45).fill(null); // dynamic per type
+
+function chooseLanguage(l){
+  lang = l;
+  document.getElementById('btn-en').classList.remove('ring-2');
+  document.getElementById('btn-hi').classList.remove('ring-2');
+  document.getElementById(l==='en'?'btn-en':'btn-hi').classList.add('ring-2');
+}
+
+/* ----------------- QUESTION BANK (45) - Plant Kingdom NEET oriented -----------------
+   Keep answers, explanations (en.exp / hi.exp). Match entries: match: [index mapping]
+   For match UI: right side choices will be numbered 1..n, and user's selection stored as index (0-based).
+-------------------------------------------------------------------------- */
+const Q = [
+  /* 1 */ {type:'mcq', en:{q:'Which of the following is the dominant phase in bryophytes?', opts:['Sporophyte','Gametophyte','Protonema','Antheridium'], ans:1, exp:'Bryophytes have dominant, independent haploid gametophyte.'}, hi:{q:'ब्रायोफाइट्स में प्रधान अवस्था कौन सी है?', opts:['स्पोरोफाइट','गेमेटोफाइट','प्रोटोनेमा','एन्थरिडियम'], ans:1, exp:'ब्रायोफाइट्स में स्वतंत्र हाप्लॉइड गेमेटोफाइट प्रधान होता है।'}},
+  /* 2 */ {type:'statement', en:{I:'Endosperm in most angiosperms is triploid.', II:'It results from fusion of one sperm with two polar nuclei.', opts:['Only I true','Only II true','Both true','Neither'], ans:2, exp:'Triploid endosperm arises from fusion of sperm with two polar nuclei.'}, hi:{I:'अधिकांश एन्जियोस्पर्म्स में एंडोस्पर्म ट्रिप्लॉइड होता है।', II:'यह एक शुक्राणु के दो पोलर नाभिकों के मिलन का परिणाम है।', opts:['केवल I','केवल II','दोनों','कोई नहीं'], ans:2, exp:'ट्रिप्लॉइड एंडोस्पर्म शुक्राणु व दो पोलर नाभिकों के मेल से बनता है।'}},
+  /* 3 */ {type:'assertion', en:{A:'Selaginella is heterosporous.', R:'It bears microsporangia and megasporangia on same strobilus.', opts:['Both A and R true and R explains A','Both true but R does not explain A','A true R false','A false R true'], ans:0, exp:'Selaginella produces microspores and megaspores (heterospory).'}, hi:{A:'Selaginella हेटेरोस्पोरस है।', R:'यह उसी स्ट्रोबिलस पर माइक्रोस्पोरेन्जिया और मेगास्पोरेन्जिया रखता है।', opts:['दोनों सत्य और R A को समझाता है','दोनों सत्य पर R A को नहीं समझाता','A सही R गलत','A गलत R सही'], ans:0, exp:'Selaginella में हेटेरोस्पोरी पाई जाती है।'}},
+  /* 4 */ {type:'mcq', en:{q:'Which tissue mainly conducts water in vascular plants?', opts:['Phloem','Xylem','Collenchyma','Parenchyma'], ans:1, exp:'Xylem conducts water and minerals.'}, hi:{q:'कौन सा ऊतक मुख्य रूप से जल का संवहन करता है?', opts:['फलोएम','ज़ाइलम','कोलेंकाइमा','पेरेन्काइमा'], ans:1, exp:'ज़ाइलम पानी और खनिजों का संवहन करता है।'}},
+  /* 5 */ {type:'match', en:{q:'Match Column I (Characteristic) with Column II (Example).', A:['Floridean starch','Heterospory','Phragmoplast formation','Vessels'], B:['Red algae (Rhodophyta)','Selaginella','Charophytes/land plants','Angiosperms'], match:[0,1,2,3], exp:'Floridean starch — Red algae; Heterospory — Selaginella; Phragmoplast — Charophytes/land plants; Vessels — Angiosperms.'}, hi:{q:'कॉलम I को कॉलम II से मिलाएँ।', A:['Floridean starch','हेटेरोस्पोरी','फ्राग्मोप्लास्ट निर्माण','वेसल्स'], B:['लाल शैवाल','सेलैजिनेला','चारोफाइट्स/भूमि पौधे','एन्जियोस्पर्म्स'], match:[0,1,2,3], exp:'मिलान ऊपर दिया गया है।'}},
+  /* 6 */ {type:'mcq', en:{q:'Which pigment is typical of red algae (Rhodophyta)?', opts:['Phycoerythrin','Chlorophyll b','Fucoxanthin','Xanthophyll'], ans:0, exp:'Phycoerythrin gives red color in Rhodophyta.'}, hi:{q:'Rhodophyta में कौन सा रंगद्रव्य विशिष्ट है?', opts:['Phycoerythrin','Chlorophyll b','Fucoxanthin','Xanthophyll'], ans:0, exp:'Phycoerythrin लाल रंग देता है।'}},
+  /* 7 */ {type:'assertion', en:{A:'Tapetum provides nourishment to developing pollen.', R:'Tapetum cells supply precursors for pollen wall (sporopollenin).', opts:['Both A and R true and R explains A','Both true but R does not explain A','A true R false','A false R true'], ans:0, exp:'Tapetum is nutritive and provides materials for pollen wall formation.'}, hi:{A:'टैपेटम विकासशील पराग को पोषण देता है।', R:'टैपेटम कोशिकाएँ पराग दीवार के लिए पूर्ववर्ती प्रदान करती हैं।', opts:['दोनों सत्य और R A को समझाता है','दोनों सत्य पर R A को नहीं समझाता','A सही R गलत','A गलत R सही'], ans:0, exp:'टैपेटम पराग दीवार संरचना में सहायक है।'}},
+  /* 8 */ {type:'statement', en:{I:'Xylem vessels are absent in most pteridophytes.', II:'Tracheids are present in pteridophytes.', opts:['Only I true','Only II true','Both true','Neither'], ans:2, exp:'Most pteridophytes lack vessels but have tracheids.'}, hi:{I:'अधिकांश प्टेरिडोफाइट्स में ज़ाइलम वेसल्स अनुपस्थित होते हैं।', II:'प्टेरिडोफाइट्स में ट्रेकएड्स मौजूद होते हैं।', opts:['केवल I','केवल II','दोनों','कोई नहीं'], ans:2, exp:'दोनों कथन सत्य हैं।'}},
+  /* 9 */ {type:'mcq', en:{q:'Which adaptation reduces transpiration in xerophytes?', opts:['Sunken stomata','Thin cuticle','Large leaves','Shallow roots'], ans:0, exp:'Sunken stomata reduce water loss.'}, hi:{q:'ज़ेरोफाइट्स में कौन-सा अनुकूलन ट्रांसपिरेशन कम करता है?', opts:['डूबे हुए स्टोमाटा','पतली कटिकल','बड़ी पत्तियाँ','उपरी जड़ें'], ans:0, exp:'डूबे हुए स्टोमाटा पानी की हानि कम करते हैं।'}},
+  /*10*/ {type:'match', en:{q:'Match plant part (I) with its function (II).', A:['Root hairs','Xylem vessels','Companion cells','Tapetum'], B:['Absorption','Water conduction','Loading/unloading of sugars','Nourish pollen'], match:[0,1,2,3], exp:'Root hairs — Absorption; Xylem — Water conduction; Companion cells — Loading/unloading; Tapetum — Nourish pollen.'}, hi:{q:'पौधे के भाग को कार्य से मिलाएँ।', A:['रूट हेयर्स','ज़ाइलम वेसल्स','कंपैनियन कोशिकाएँ','टैपेटम'], B:['अवशोषण','जल संवहन','शर्करा लोड/अनलोड','पराग का पोषण'], match:[0,1,2,3], exp:'मिलान ऊपर दिया गया है।'}},
+  /*11*/ {type:'mcq', en:{q:'Which of these is heterosporous?', opts:['Marsilea','Typical ferns','Funaria','Marchantia'], ans:0, exp:'Marsilea (a heterosporous pteridophyte).' }, hi:{q:'इनमें से कौन हेटेरोस्पोरस है?', opts:['Marsilea','सामान्य फर्न्स','Funaria','Marchantia'], ans:0, exp:'Marsilea हेटेरोस्पोरस है।'}},
+  /*12*/ {type:'assertion', en:{A:'Companion cells have nuclei and are metabolically active.', R:'They assist sieve tube elements in loading/unloading.', opts:['Both A and R true and R explains A','Both true but R does not explain A','A true R false','A false R true'], ans:0, exp:'Companion cells are nucleated and assist sieve tubes.'}, hi:{A:'कंपैनियन कोशिकाओं में नाभिक होता है और वे सक्रिय होती हैं।', R:'वे सिव ट्यूब तत्वों के लोड/अनलोड में सहायता करती हैं।', opts:['दोनों सत्य और R A को समझाता','दोनों सत्य पर R A को नहीं समझाता','A सही R गलत','A गलत R सही'], ans:0, exp:'कंपैनियन कोशिकाएँ सिव तत्वों का समर्थन करती हैं।'}},
+  /*13*/ {type:'statement', en:{I:'Double fertilization occurs in angiosperms.', II:'It produces embryo and endosperm.', opts:['Only I true','Only II true','Both true','Neither'], ans:2, exp:'Both statements are true.'}, hi:{I:'एन्जियोस्पर्म्स में डबल फर्टिलाइज़ेशन होता है।', II:'यह भ्रूण और एंडोस्पर्म बनाता है।', opts:['केवल I','केवल II','दोनों','कोई नहीं'], ans:2, exp:'दोनों सत्य हैं।'}},
+  /*14*/ {type:'mcq', en:{q:'Which storage product is common in red algae?', opts:['Floridean starch','Starch','Glycogen','Inulin'], ans:0, exp:'Floridean starch is typical of Rhodophyta.'}, hi:{q:'लाल शैवाल में सामान्य संग्रह क्या है?', opts:['Floridean starch','स्टार्च','ग्लाइकोजन','इन्युलिन'], ans:0, exp:'Floridean starch Rhodophyta में पाया जाता है।'}},
+  /*15*/ {type:'match', en:{q:'Match reproduction terms (I) with description (II).', A:['Sporophyte','Gametophyte','Meiosis','Syngamy'], B:['Diploid phase producing spores','Haploid phase','Reduction division','Fusion of gametes'], match:[0,1,2,3], exp:'Sporophyte—diploid; Gametophyte—haploid; Meiosis—reduction; Syngamy—fusion.'}, hi:{q:'प्रजनन शब्दों को विवरण से मिलाएँ।', A:['स्पोरोफाइट','गेमेटोफाइट','मीयोसिस','सिनगामी'], B:['स्पोर्स बनवाने वाला डिप्लॉइड अवस्था','हाप्लॉइड अवस्था','रिडक्शन डिवीजन','गैमेट्स का विलय'], match:[0,1,2,3], exp:'मिलान ऊपर दिया गया है।'}},
+  /*16*/ {type:'assertion', en:{A:'Vessels are common in many angiosperms.', R:'They evolved to improve water transport efficiency.', opts:['Both A and R true and R explains A','Both true but R does not explain A','A true R false','A false R true'], ans:0, exp:'Vessels (in angiosperms) allow efficient conduction.'}, hi:{A:'वेसल्स कई एन्जियोस्पर्म्स में सामान्य हैं।', R:'ये जल संवहन की क्षमता बेहतर करने के लिए विकसित हुए।', opts:['दोनों सत्य और R A को समझाता','दोनों सत्य पर R A को नहीं समझाता','A सही R गलत','A गलत R सही'], ans:0, exp:'वेसल्स जल संवहन में अधिक सक्षम होते हैं।'}},
+  /*17*/ {type:'mcq', en:{q:'Which structure anchors bryophytes?', opts:['True roots','Rhizoids','Rhizomes','Root hairs'], ans:1, exp:'Rhizoids anchor bryophytes; they are unicellular/multicellular tubular structures.'}, hi:{q:'ब्रायोफाइट्स को क्या एंकर करता है?', opts:['वास्तविक जड़ें','राइज़ॉइड्स','राइजोम्स','रूट हेयर्स'], ans:1, exp:'राइज़ॉइड्स ब्रायोफाइट्स को एंकर करते हैं।'}},
+  /*18*/ {type:'statement', en:{I:'Dicot stem vascular bundles are arranged in a ring.', II:'Monocot stems have scattered vascular bundles.', opts:['Only I true','Only II true','Both true','Neither'], ans:2, exp:'Both statements true.'}, hi:{I:'डाइकोट तने में संवहनीय बंडल वलय में होते हैं।', II:'मोनोकोट में बिखरे होते हैं।', opts:['केवल I','केवल II','दोनों','कोई नहीं'], ans:2, exp:'दोनों सत्य हैं।'}},
+  /*19*/ {type:'mcq', en:{q:'Which of the following is true about sieve tube elements?', opts:['Contain nucleus at maturity','Have sieve plates and companion cells','Are dead at maturity','Conduct water only'], ans:1, exp:'Sieve tubes have sieve plates and companion cells.'}, hi:{q:'सिव ट्यूब तत्वों के बारे में कौन सा सत्य है?', opts:['परिपक्वता पर नाभिक होता है','सिव प्लेट्स और कंपैनियन कोशिकाएँ होती हैं','परिपक्वता पर मृत होते हैं','केवल पानी संचरित करते हैं'], ans:1, exp:'सिव प्लेट्स और कंपैनियन कोशिकाएँ सच्ची बात है।'}},
+  /*20*/ {type:'match', en:{q:'Match structure to primary role.', A:['Tapetum','Endosperm','Rhizoids','Phragmoplast'], B:['Nourish pollen','Nutrition for embryo','Anchorage in bryophytes','Cell plate formation'], match:[0,1,2,3], exp:'Tapetum—nourish pollen; Endosperm—nutrition; Rhizoids—anchorage; Phragmoplast—cell plate.'}, hi:{q:'संरचना को प्राथमिक भूमिका से मिलाएँ।', A:['टैपेटम','एंडोस्पर्म','राइज़ॉइड्स','फ्राग्मोप्लास्ट'], B:['पराग का पोषण','भ्रूण का पोषण','एंकरज','कोशिका प्लेट गठन'], match:[0,1,2,3], exp:'मिलान ऊपर दिया गया है।'}},
+  /*21*/ {type:'assertion', en:{A:'Some gymnosperms have motile sperm (flagellated).', R:'This indicates reliance on liquid medium for fertilization in those taxa.', opts:['Both A and R true and R explains A','Both true but R does not explain A','A true R false','A false R true'], ans:0, exp:'Cycads and Ginkgo show flagellated sperm needing liquid for transfer.'}, hi:{A:'कुछ जिम्नोस्पर्म्स में गतिशील शुक्राणु होते हैं।', R:'यह उन जातियों के लिए तरल माध्यम पर निर्भरता दिखाता है।', opts:['दोनों सत्य और R A को समझाता','दोनों सत्य पर R A को नहीं समझाता','A सही R गलत','A गलत R सही'], ans:0, exp:'Cycads/Ginkgo में फ्लैगेललेटेड शुक्राणु पाए जाते हैं।'}},
+  /*22*/ {type:'mcq', en:{q:'Which is common storage product in angiosperm endosperms?', opts:['Starch and proteins','Only lipids','Only vitamins','Cellulose'], ans:0, exp:'Endosperms store starch & proteins commonly.'}, hi:{q:'एन्जियोस्पर्म एंडोस्पर्म में सामान्य संग्रहीत उत्पाद क्या है?', opts:['स्टार्च और प्रोटीन','केवल लिपिड','केवल विटामिन','सेलुलोज़'], ans:0, exp:'एंडोस्पर्म में स्टार्च और प्रोटीन सामान्य हैं।'}},
+  /*23*/ {type:'statement', en:{I:'Bryophytes lack true vascular tissues.', II:'Bryophyte sporophyte is dominant and independent.', opts:['Only I true','Only II true','Both true','Neither'], ans:0, exp:'I true; II false (bryophytes have dominant gametophyte).'}, hi:{I:'ब्रायोफाइट्स में असली संवहनीय ऊतक नहीं होते।', II:'ब्रायोफाइट स्पोरोफाइट प्रधान और स्वतंत्र है।', opts:['केवल I','केवल II','दोनों','कोई नहीं'], ans:0, exp:'I सत्य; II असत्य।'}},
+  /*24*/ {type:'match', en:{q:'Match Column I—Characteristic with Column II—Example', A:['Floridean starch','Heterospory','Vessels','Phragmoplast formation'], B:['Red algae (Rhodophyta)','Selaginella','Angiosperms','Charophytes/land plants'], match:[0,1,2,3], exp:'Matches: Floridean starch—Red algae; Heterospory—Selaginella; Vessels—Angiosperms; Phragmoplast—Charophytes.'}, hi:{q:'कॉलम मिलाएँ।', A:['Floridean starch','हेटेरोस्पोरी','वेसल्स','फ्राग्मोप्लास्ट निर्माण'], B:['लाल शैवाल','सेलैजिनेला','एन्जियोस्पर्म्स','चारोफाइट्स'], match:[0,1,2,3], exp:'मिलान ऊपर।'}},
+  /*25*/ {type:'mcq', en:{q:'Which meristem contributes to secondary growth (increase in girth)?', opts:['Apical meristem','Lateral meristem (cambia)','Intercalary meristem','None of these'], ans:1, exp:'Lateral meristem (vascular cambium) causes secondary growth.'}, hi:{q:'कौन सा मेरिस्टेम द्वितीयक विकास में योगदान देता है?', opts:['एपिकल','लैटरल (कैम्बिया)','इंटरकैलरी','उपरोक्त में से कोई नहीं'], ans:1, exp:'लैटरल कैम्बियम द्वितीयक विकास में योगदान देता है।'}},
+  /*26*/ {type:'assertion', en:{A:'Gametophyte is haploid.', R:'Gametophyte produces gametes by mitosis.', opts:['Both A and R true and R explains A','Both true but R does not explain A','A true R false','A false R true'], ans:0, exp:'Gametophyte (n) forms gametes by mitosis.'}, hi:{A:'गेमेटोफाइट हाप्लॉइड होता है।', R:'गेमेटोफाइट गेमेट्स का निर्माण मिटोसिस द्वारा करता है।', opts:['दोनों सत्य और R A को समझाता','दोनों सत्य पर R A को नहीं समझाता','A सही R गलत','A गलत R सही'], ans:0, exp:'गेमेटोफाइट नाभिकीय संख्या n होती है और मिटोसिस से गेमेट बनता है।'}},
+  /*27*/ {type:'mcq', en:{q:'Which cells in leaf are primarily photosynthetic?', opts:['Epidermal cells','Mesophyll cells','Sclerenchyma','Phloem cells'], ans:1, exp:'Mesophyll cells (palisade and spongy) conduct photosynthesis.'}, hi:{q:'पत्ती में मुख्य रूप से कौन सी कोशिकाएँ फोटोसिंथेसिस करती हैं?', opts:['एपिडर्मल','मेसोफिल','स्क्लेरेनकाइमा','फलोएम'], ans:1, exp:'मेसोफिल कोशिकाएँ फोटोसिंथेसिस में सक्रिय होती हैं।'}},
+  /*28*/ {type:'statement', en:{I:'In angiosperms the female gametophyte is called embryo sac.', II:'Embryo sac is typically 8-nucleate.', opts:['Only I true','Only II true','Both true','Neither'], ans:2, exp:'Both statements true for typical Polygonum type embryo sac.'}, hi:{I:'एन्जियोस्पर्म में महिला गेमेटोफाइट को एम्ब्रियो सैक कहते हैं।', II:'एम्ब्रियो सैक आमतौर पर 8-न्यूक्लियेट होता है।', opts:['केवल I','केवल II','दोनों','कोई नहीं'], ans:2, exp:'आम तौर पर पोलिगोनम प्रकार का एम्ब्रियो सैक 8-न्यूक्लियेट होता है।'}},
+  /*29*/ {type:'match', en:{q:'Match: Column I — Feature; Column II — Group', A:['Naked ovules','Flowers with carpels','Haploid dominant phase','Secondary growth by cambium'], B:['Gymnosperms','Angiosperms','Bryophytes','Dicots'], match:[0,1,2,3], exp:'Naked ovules—Gymnosperms; Flowers—Angiosperms; Haploid dominant—Bryophytes; Cambium—Dicots.'}, hi:{q:'कॉलम मिलाएँ।', A:['नग्न ओव्यूले','फूल व कार्पल','हाप्लॉइड प्रधान अवस्था','कैम्बियम द्वारा द्वितीयक विकास'], B:['जिम्नोस्पर्म्स','एन्जियोस्पर्म्स','ब्रायोफाइट्स','डाइकोट्स'], match:[0,1,2,3], exp:'मिलान ऊपर।'}},
+  /*30*/ {type:'mcq', en:{q:'Which is characteristic of wind-pollinated flowers?', opts:['Bright petals','Feathery stigmas','Strong fragrance','Nectar guides'], ans:1, exp:'Feathery stigmas capture wind-borne pollen.'}, hi:{q:'हवा द्वारा परागणित फूलों की विशेषता क्या है?', opts:['दिखावटी पंखुड़ियाँ','पंख जैसा स्टिग्मा','तीव्र सुगंध','नेक्टर गाइड्स'], ans:1, exp:'पंख जैसा स्टिग्मा हवा से पराग पकड़ता है।'}},
+  /*31*/ {type:'assertion', en:{A:'Sporophyte arises from zygote.', R:'Zygote is diploid and divides by mitosis to form sporophyte.', opts:['Both A and R true and R explains A','Both true but R does not explain A','A true R false','A false R true'], ans:0, exp:'Zygote (2n) divides mitotically to form sporophyte.'}, hi:{A:'स्पोरोफाइट जाईगोट से उत्पन्न होता है।', R:'जाईगोट डिप्लॉइड होता है और मिटोसिस द्वारा स्पोरोफाइट बनाता है।', opts:['दोनों सत्य और R A को समझाता','दोनों सत्य पर R A को नहीं समझाता','A सही R गलत','A गलत R सही'], ans:0, exp:'जाईगोट स्पोरोफाइट का आरम्भिक कोशिका है।'}},
+  /*32*/ {type:'statement', en:{I:'Female gametophyte in angiosperms is dependent on sporophyte for nutrition.', II:'Female gametophyte is free-living in all plants.', opts:['Only I true','Only II true','Both true','Neither'], ans:0, exp:'I true; II false (not free-living in angiosperms).' }, hi:{I:'एन्जियोस्पर्म में महिला गेमेटोफाइट पोषण के लिए स्पोरोफाइट पर निर्भर है।', II:'महिला गेमेटोफाइट सभी पौधों में स्वतंत्र रहती है।', opts:['केवल I','केवल II','दोनों','कोई नहीं'], ans:0, exp:'एन्जियोस्पर्म्स में महिला गेमेटोफाइट पोषण हेतु स्पोरोफाइट पर निर्भर रहती है।'}},
+  /*33*/ {type:'mcq', en:{q:'Which is true for parenchyma cells?', opts:['Provide rigid support','Thin-walled and involved in storage','Dead at maturity','Conduct water only'], ans:1, exp:'Parenchyma are thin-walled living cells involved in storage.'}, hi:{q:'पेरेन्काइमा कोशिकाओं के लिए कौन सा सत्य है?', opts:['कठोर समर्थन देती हैं','पतली दीवारों वाली और संचयन में शामिल','परिपक्वता पर मृत','केवल पानी संचरित करती हैं'], ans:1, exp:'पेरेन्काइमा पतली दीवारें और भंडारण का कार्य करती हैं。'}},
+  /*34*/ {type:'assertion', en:{A:'Meiosis leads to formation of spores.', R:'Spores germinate to produce gametophyte.', opts:['Both A and R true and R explains A','Both true but R does not explain A','A true R false','A false R true'], ans:0, exp:'Meiosis produces spores; spores germinate into gametophytes.'}, hi:{A:'मीयोसिस स्पोर्स बनाता है。', R:'स्पोर्स अंकुरित होकर गेमेटोफाइट बनते हैं।', opts:['दोनों सत्य और R A को समझाता','दोनों सत्य पर R A को नहीं समझाता','A सही R गलत','A गलत R सही'], ans:0, exp:'मीयोसिस → स्पोर्स → गेमेटोफाइट。'}},
+  /*35*/ {type:'match', en:{q:'Match types of pollination with meaning', A:['Autogamy','Geitonogamy','Cross-pollination','Cleistogamy'], B:['Self-pollination within same flower','Pollination between flowers of same plant','Pollination between different plants','Self-pollination within closed flowers'], match:[0,1,2,3], exp:'Autogamy—same flower; Geitonogamy—same plant; Cross—different plants; Cleistogamy—closed flowers.'}, hi:{q:'परागण के प्रकार को अर्थ से मिलाएँ。', A:['ऑटोगैमी','गीतोनोगैमी','क्रॉस-पोलिनेशन','क्लेस्टोगैमी'], B:['एक ही फूल में स्व-परागण','एक ही पौधे के विभिन्न फूलों में परागण','विभिन्न पौधों के बीच परागण','बंद फूलों में स्व-परागण'], match:[0,1,2,3], exp:'मिलान ऊपर दिया गया है。'}},
+  /*36*/ {type:'statement', en:{I:'Sporophyte is diploid.', II:'Gametophyte is haploid.', opts:['Only I','Only II','Both','Neither'], ans:2, exp:'Both true.'}, hi:{I:'स्पोरोफाइट डिप्लॉइड है।', II:'गेमेटोफाइट हाप्लॉइड है।', opts:['केवल I','केवल II','दोनों','कोई नहीं'], ans:2, exp:'दोनों सत्य हैं।'}},
+  /*37*/ {type:'mcq', en:{q:'Which group has flowers and fruits enclosing seeds?', opts:['Gymnosperms','Angiosperms','Pteridophytes','Bryophytes'], ans:1, exp:'Angiosperms have flowers and fruits enclosing seeds.'}, hi:{q:'किस समूह में बीज फूल और फलों के अंदर बंद होते हैं?', opts:['जिम्नोस्पर्म्स','एन्जियोस्पर्म्स','प्टेरिडोफाइट्स','ब्रायोफाइट्स'], ans:1, exp:'एन्जियोस्पर्म्स के पास फल और फूल होते हैं。'}},
+  /*38*/ {type:'assertion', en:{A:'Seed coat (testa) is derived from integuments.', R:'Integuments are sporophytic tissues (diploid).', opts:['Both A and R true and R explains A','Both true but R does not explain A','A true R false','A false R true'], ans:0, exp:'Testa originates from integuments of ovule (sporophyte tissue).'}, hi:{A:'बीज आवरण इंटीग्यूमेंट से उत्पन्न होता है。', R:'इंटीग्यूमेंट स्पोरोफाइटिक ऊतक होते हैं。', opts:['दोनों सत्य और R A को समझाता','दोनों सत्य पर R A को नहीं समझाता','A सही R गलत','A गलत R सही'], ans:0, exp:'इंटीग्यूमेंट सपोरोफाइटिक होते हुए टेस्टा बनाते हैं।'}},
+  /*39*/ {type:'mcq', en:{q:'Which is true of xylem tracheids?', opts:['They are living at maturity','They have pits and help water conduction','They form sieve plates','They are sugar-conducting cells'], ans:1, exp:'Tracheids have pits and conduct water.'}, hi:{q:'ज़ाइलम ट्रेकएड के बारे में कौन सा सत्य है?', opts:['वे परिपक्वता पर जीवित होते हैं','उनमें पिट्स होते हैं और वे जल संचरण करते हैं','वे सिव प्लेट बनाते हैं','वे शर्करा संचरित करते हैं'], ans:1, exp:'ट्रेकएड्स पिट्स से जल प्रवाह में मदद करते हैं。'}},
+  /*40*/ {type:'match', en:{q:'Match Column I (feature) with Column II (group/example)', A:['Dominant gametophyte','Naked seeds','Double fertilization','Vascular cambium'], B:['Bryophytes','Gymnosperms','Angiosperms','Dicots'], match:[0,1,2,3], exp:'Matches: Dominant gametophyte—Bryophytes; Naked seeds—Gymnosperms; Double fertilization—Angiosperms; Vascular cambium—Dicots.'}, hi:{q:'कॉलम मिलाएँ。', A:['प्रधान गेमेटोफाइट','नग्न बीज','डबल फर्टिलाइज़ेशन','वस्कुलर कैम्बियम'], B:['ब्रायोफाइट्स','जिम्नोस्पर्म्स','एन्जियोस्पर्म्स','डाइकोट्स'], match:[0,1,2,3], exp:'मिलान ऊपर दिया गया है।'}},
+  /*41*/ {type:'mcq', en:{q:'Which group stores food as floridean starch?', opts:['Rhodophyta','Chlorophyta','Phaeophyceae','Cyanophyta'], ans:0, exp:'Rhodophyta store floridean starch.'}, hi:{q:'कौन सा समूह floridean starch के रूप में भोजन संग्रहीत करता है?', opts:['Rhodophyta','Chlorophyta','Phaeophyceae','Cyanophyta'], ans:0, exp:'Rhodophyta में floridean starch पाया जाता है।'}},
+  /*42*/ {type:'assertion', en:{A:'Meiosis produces haploid spores.', R:'These spores germinate to form gametophytes.', opts:['Both A and R true and R explains A','Both true but R does not explain A','A true R false','A false R true'], ans:0, exp:'Meiosis → haploid spores → gametophyte after germination.'}, hi:{A:'मीयोसिस हाप्लॉइड स्पोर्स बनाता है।', R:'ये स्पोर्स अंकुरित होकर गेमेटोफाइट बनते हैं।', opts:['दोनों सत्य और R A को समझाता','दोनों सत्य पर R A को नहीं समझाता','A सही R गलत','A गलत R सही'], ans:0, exp:'मीयोसिस का परिणाम स्पोर्स बनना है।'}},
+  /*43*/ {type:'statement', en:{I:'Parenchyma is involved in storage.', II:'Parenchyma cells are dead at maturity.', opts:['Only I','Only II','Both','Neither'], ans:0, exp:'I true; II false (parenchyma are living).' }, hi:{I:'पेरेन्काइमा संचयन में शामिल है।', II:'पेरेन्काइमा कोशिकाएँ परिपक्वता पर मृत होती हैं。', opts:['केवल I','केवल II','दोनों','कोई नहीं'], ans:0, exp:'I सत्य; II असत्य。'}},
+  /*44*/ {type:'match', en:{q:'Match structures with function', A:['Rhizoids','Hydathodes','Stomata','Root hairs'], B:['Anchorage in bryophytes','Guttation','Gas exchange & transpiration','Absorption surface'], match:[0,1,2,3], exp:'Rhizoids—Anchorage; Hydathodes—Guttation; Stomata—Gas exchange; Root hairs—Absorption.'}, hi:{q:'संरचनाओं को कार्य से मिलाएँ。', A:['राइज़ॉइड्स','हायडाथोड्स','स्टोमाटा','रूट हेयर्स'], B:['ब्रायोफाइट्स में एंकरज','गट्टेशन','गैस विनिमय और ट्रांसपिरेशन','अवशोषण के लिए सतह'], match:[0,1,2,3], exp:'मिलान ऊपर।'}},
+  /*45*/ {type:'mcq', en:{q:'Most advanced feature of angiosperms compared to gymnosperms is:', opts:['Naked seeds','Enclosed seeds (fruits) & flowers','Free-living gametophyte','Flagellated sperm'], ans:1, exp:'Angiosperms have flowers and fruits (enclosed seeds).' }, hi:{q:'जिम्नोस्पर्म्स की तुलना में एन्जियोस्पर्म्स की सबसे उन्नत विशेषता क्या है?', opts:['नग्न बीज','बंद बीज (फल) & फूल','स्वतंत्र गेमेटोफाइट','फ़्लैगलेटेड शुक्राणु'], ans:1, exp:'एन्जियोस्पर्म्स में फूल और फल होते हैं。'}}];/* end Q */
+
+/* ----------------- HELPERS ----------------- */
+function normalizeAssertionText(s){
+  if(!s) return '';
+  return s.replace(/^\s*(Assertion\s*\(A\)\s*[:\-\s]*)/i,'').replace(/^\s*(A\s*[:\-\s]*)/i,'').trim();
+}
+function normalizeReasonText(s){
+  if(!s) return '';
+  return s.replace(/^\s*(Reason\s*\(R\)\s*[:\-\s]*)/i,'').replace(/^\s*(R\s*[:\-\s]*)/i,'').trim();
+}
+function escapeHTML(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ----------------- RENDERING ----------------- */
+function startTimer(){
+  document.getElementById('timer').innerText = formatTime(timeLeft);
+  timerId = setInterval(()=>{
+    timeLeft--;
+    document.getElementById('timer').innerText = formatTime(timeLeft);
+    if(timeLeft<=0){ clearInterval(timerId); submitQuiz(); }
+  },1000);
+}
+function formatTime(s){ const m=Math.floor(s/60).toString().padStart(2,'0'); const sec=(s%60).toString().padStart(2,'0'); return `${m}:${sec}`; }
+
+function startQuiz(){
+  if(!lang) lang='en';
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  current = 0;
+  renderQuestion();
+  renderPalette();
+  startTimer();
+}
+
+function renderQuestion(){
+  const item = Q[current];
+  const container = document.getElementById('question-area');
+  const data = item[lang];
+  let html = '';
+
+  html += `<div class="flex items-center justify-between mb-2"><div class="small-muted">Q ${current+1} / ${Q.length}</div><div class="small-muted text-yellow-600">${marked.has(current)?'Marked':''}</div></div>`;
+
+  if(item.type==='mcq'){
+    html += `<h4 class="font-semibold text-lg mb-3">${escapeHTML(data.q)}</h4>`;
+    data.opts.forEach((o,i)=>{
+      const sel = answers[current]===i? ' selected' : '';
+      html += `<div class="option-item mb-2${sel}" onclick="selectMCQ(${i})">${String.fromCharCode(65+i)}. ${escapeHTML(o)}</div>`;
+    });
+  }
+  else if(item.type==='assertion'){
+    // normalize possible duplicate "Assertion (A):" prefixes
+    const Atext = normalizeAssertionText(data.A);
+    const Rtext = normalizeReasonText(data.R);
+    html += `<h4 class="font-semibold text-lg">Assertion (A): ${escapeHTML(Atext)}</h4>`;
+    html += `<h4 class="font-semibold text-lg text-gray-700 mt-2">Reason (R): ${escapeHTML(Rtext)}</h4>`;
+    data.opts.forEach((o,i)=>{ const sel = answers[current]===i? ' selected' : ''; html += `<div class="option-item mb-2${sel}" onclick="selectMCQ(${i})">${['A','B','C','D'][i]}. ${escapeHTML(o)}</div>`; });
+  }
+  else if(item.type==='statement'){
+    html += `<h4 class="font-semibold text-lg">Statement I: ${escapeHTML(data.I)}</h4>`;
+    html += `<h4 class="font-semibold text-lg text-gray-700 mt-2">Statement II: ${escapeHTML(data.II)}</h4>`;
+    data.opts.forEach((o,i)=>{ const sel = answers[current]===i? ' selected' : ''; html += `<div class="option-item mb-2${sel}" onclick="selectMCQ(${i})">${['A','B','C','D'][i]}. ${escapeHTML(o)}</div>`; });
+  }
+  else if(item.type==='match'){
+    html += `<h4 class="font-semibold text-lg mb-3">${escapeHTML(data.q)}</h4>`;
+    html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
+    data.A.forEach((a,i)=>{
+      const selVal = (answers[current] && answers[current][i]!==undefined) ? answers[current][i] : '';
+      html += `<div class="flex items-center gap-3"><div class="w-2/5"><strong>${String.fromCharCode(65+i)}.</strong> ${escapeHTML(a)}</div><div class="w-3/5"><select class="match-select" onchange="selectMatch(this,${i})"><option value="">-- Select (1-${data.B.length}) --</option>`;
+      data.B.forEach((b,j)=>{ const selected = selVal==j? 'selected':''; html += `<option value="${j}" ${selected}>${j+1}. ${escapeHTML(b)}</option>`; });
+      html += `</select></div></div>`;
+    });
+    html += `</div>`;
+    html += `<p class="text-xs text-gray-500 mt-2">Answer format: A-1, B-3, C-2 ... (choose number for each left item)</p>`;
+  }
+
+  container.innerHTML = html;
+  // next/prev buttons visibility
+  document.getElementById('prev').disabled = current===0;
+  if(current===Q.length-1){ document.getElementById('next').style.display='none'; } else { document.getElementById('next').style.display='inline-block'; }
+  renderPalette();
+}
+
+function selectMCQ(i){ if(submitted) return; answers[current]=i; renderQuestion(); }
+function selectMatch(selElem, idx){ if(submitted) return; if(!answers[current]) answers[current]=[]; const v = selElem.value; answers[current][idx] = (v === '' ? null : parseInt(v)); renderPalette(); }
+
+function toggleMark(){ if(marked.has(current)) marked.delete(current); else marked.add(current); renderPalette(); }
+function nextQuestion(){ if(current < Q.length-1){ current++; renderQuestion(); } }
+function prevQuestion(){ if(current > 0){ current--; renderQuestion(); } }
+
+function renderPalette(){
+  const pal = document.getElementById('palette'); pal.innerHTML='';
+  Q.forEach((q,i)=>{
+    const btn = document.createElement('button'); btn.className='palette-btn'; btn.textContent = i+1;
+    btn.onclick = ()=>{ current=i; renderQuestion(); };
+    if(submitted){
+      const user = answers[i];
+      let correct=false;
+      if(q.type==='mcq' || q.type==='assertion' || q.type==='statement'){ correct = user===q[lang].ans; }
+      else if(q.type==='match'){ const expected = q[lang].match; const got = user || []; correct = expected.length===got.length && expected.every((v,idx)=>v===got[idx]); }
+      btn.style.background = correct? '#bbf7d0' : (user==null || user==undefined || (Array.isArray(user) && user.length===0)? '#e6e7eb' : '#fecaca');
+    } else {
+      if(i===current){ btn.style.background='#3b82f6'; btn.style.color='white'; }
+      else if(answers[i]!==null && answers[i]!==undefined && ( !(Array.isArray(answers[i])) || answers[i].length>0 )) { btn.style.background='#fde68a'; }
+      else btn.style.background='#e6e7eb';
+    }
+    pal.appendChild(btn);
+  });
+}
+
+/* ----------------- SUBMISSION & SCORECARD ----------------- */
+function submitQuiz(){
+  if(submitted) return;
+  submitted = true;
+  clearInterval(timerId);
+
+  // compute stats
+  let attempted = 0, correct = 0, incorrect = 0, unattempted = 0;
+  let score = 0;
+  const solList = [];
+
+  for(let i=0;i<Q.length;i++){
+    const q = Q[i];
+    const user = answers[i];
+    let status = 'Unattempted';
+    let userDisplay = 'Not Attempted';
+    let correctDisplay = '';
+    // compute correctness
+    if(q.type==='mcq' || q.type==='assertion' || q.type==='statement'){
+      const correctIndex = q[lang].ans;
+      correctDisplay = optionLabel(correctIndex) + ' ' + (q[lang].opts ? q[lang].opts[correctIndex] : '');
+      if(user===null || user===undefined){ unattempted++; status='Unattempted'; }
+      else{
+        attempted++;
+        userDisplay = optionLabel(user) + ' ' + q[lang].opts[user];
+        if(user===correctIndex){ correct++; score += POS; status='Correct'; }
+        else { incorrect++; score += NEG; status='Incorrect'; }
+      }
+    } else if(q.type==='match'){
+      const expected = q[lang].match;
+      const got = user || [];
+      const parts = [];
+      let anySelected = false;
+      for(let k=0;k<q[lang].A.length;k++){
+        const val = (got[k]===null || got[k]===undefined) ? null : got[k];
+        if(val!==null){ anySelected = true; parts.push(`${String.fromCharCode(65+k)}-${(val+1)}`); } else { parts.push(`${String.fromCharCode(65+k)}-NA`); }
+      }
+      userDisplay = parts.join(', ');
+      const corrParts = expected.map((v,k)=>`${String.fromCharCode(65+k)}-${(v+1)}`);
+      correctDisplay = corrParts.join(', ');
+      if(!anySelected) { unattempted++; status='Unattempted'; }
+      else{
+        attempted++;
+        const allCorrect = expected.length===got.length && expected.every((v,idx)=>v===got[idx]);
+        if(allCorrect){ correct++; score += POS; status='Correct'; }
+        else { incorrect++; score += NEG; status='Incorrect'; }
+      }
+    }
+
+    const explanation = q[lang].exp ? q[lang].exp : (q.en && q.en.exp ? q.en.exp : '');
+    solList.push({
+      idx: i+1,
+      qtext: (q.type==='mcq' || q.type==='match') ? (q[lang].q || '') : (q.type==='assertion' ? `Assertion (A): ${normalizeAssertionText(q[lang].A)} / Reason (R): ${normalizeReasonText(q[lang].R)}` : `${q[lang].I} | ${q[lang].II}`),
+      userDisplay,
+      correctDisplay,
+      status,
+      explanation
+    });
+  }
+
+  const percentage = ((score) / (Q.length * POS) * 100);
+  document.getElementById('stat-total').innerText = Q.length;
+  document.getElementById('stat-attempted').innerText = attempted;
+  document.getElementById('stat-correct').innerText = correct;
+  document.getElementById('stat-incorrect').innerText = incorrect;
+  document.getElementById('points').innerText = `${score} Points`;
+  document.getElementById('percentage').innerText = `Percentage: ${percentage.toFixed(1)}%`;
+  document.getElementById('score-language').innerText = `Your results (Language: ${lang==='en'?'English':'हिन्दी'})`;
+
+  const solContainer = document.getElementById('solutions-list');
+  solContainer.innerHTML = '';
+  solList.forEach(s=>{
+    const card = document.createElement('div'); card.className='explain-card';
+    const statusBadge = s.status==='Correct' ? `<span class="badge-correct">Correct</span>` : (s.status==='Incorrect' ? `<span class="badge-incorrect">Incorrect</span>` : `<span class="badge-unattempt">Unattempted</span>`);
+    card.innerHTML = `
+      <div class="flex items-start justify-between mb-2">
+        <div><strong>Q${s.idx}:</strong> ${escapeHTML(s.qtext)}</div>
+        <div>${statusBadge}</div>
+      </div>
+      <div class="text-sm text-gray-700 mb-2"><strong>Your answer:</strong> ${escapeHTML(s.userDisplay)} ${s.status==='Correct' ? '|' : '|'} <strong>Correct:</strong> ${escapeHTML(s.correctDisplay)}</div>
+      <div class="text-sm text-gray-600"><strong>Explanation:</strong> ${escapeHTML(s.explanation)}</div>
+    `;
+    solContainer.appendChild(card);
+  });
+
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('scorecard').classList.remove('hidden');
+  renderPalette();
+}
+
+function optionLabel(i){ return String.fromCharCode(65 + i); }
+function retest(){ location.reload(); }
+
+function renderPalette(){
+  const pal = document.getElementById('palette'); if(!pal) return;
+  pal.innerHTML = '';
+  Q.forEach((q,i)=>{
+    const btn = document.createElement('button'); btn.className='palette-btn'; btn.textContent = i+1;
+    btn.onclick = ()=>{ current=i; renderQuestion(); };
+    if(submitted){
+      const user = answers[i];
+      let correct=false;
+      if(q.type==='mcq' || q.type==='assertion' || q.type==='statement'){ correct = user===q[lang].ans; }
+      else if(q.type==='match'){ const expected = q[lang].match; const got = user || []; correct = expected.length===got.length && expected.every((v,idx)=>v===got[idx]); }
+      btn.style.background = correct? '#bbf7d0' : (user==null || user==undefined || (Array.isArray(user) && user.length===0)? '#e6e7eb' : '#fecaca');
+    } else {
+      if(i===current){ btn.style.background='#3b82f6'; btn.style.color='white'; }
+      else if(answers[i]!==null && answers[i]!==undefined && ( !(Array.isArray(answers[i])) || answers[i].length>0 )){ btn.style.background='#fde68a'; }
+      else btn.style.background='#e6e7eb';
+    }
+    pal.appendChild(btn);
+  });
+}
+
+/* wire nav + start */
+document.getElementById('btn-en').classList.add('ring-2');
+renderPalette();
+renderQuestion();
+renderPalette();
+window.chooseLanguage = chooseLanguage;
+window.startQuiz = function(){ startQuiz(); startTimer(); };
+window.prevQuestion = function(){ if(current>0){ current--; renderQuestion(); } };
+window.nextQuestion = function(){ if(current < Q.length-1){ current++; renderQuestion(); } };
+window.toggleMark = toggleMark;
+window.selectMCQ = function(i){ selectMCQ(i); };
+window.selectMatch = function(sel, idx){ selectMatch(sel, idx); };
+window.submitQuiz = submitQuiz;
+window.retest = retest;
+</script>
+</body>
+</html>
