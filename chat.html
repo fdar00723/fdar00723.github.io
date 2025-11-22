@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Load required libraries -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/connectycube@4/dist/connectycube.min.js"></script>
+  <script src="https://unpkg.com/@connectycube/chat-widget@latest/dist/index.umd.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+    }
+    #ConnectyCube_chat-widget {
+      height: 100vh;
+    }
+  </style>
+</head>
+
+<body>
+
+<script>
+  // Create widget container
+  const chatWidgetContainer = document.createElement('div');
+  chatWidgetContainer.id = "ConnectyCube_chat-widget";
+  document.body.appendChild(chatWidgetContainer);
+
+  // Configure your widget
+  const props = {
+    appId: 10005,
+    authKey: "4A1F4E3C-5A20-4E2A-B567-C0C1823AF9F4",
+    userId: "455", 
+    userName: "DemoUser",
+    showOnlineUsersTab: false,
+    splitView: true,
+  };
+
+  // Start widget
+  ReactDOM.createRoot(chatWidgetContainer)
+    .render(React.createElement(ConnectyCubeChatWidget, props));
+</script>
+
+</body>
+</html>
